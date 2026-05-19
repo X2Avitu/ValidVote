@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { 
   useAccount, 
-  useReadContract, 
-  useWriteContract, 
-  useWaitForTransactionReceipt 
+  useWriteContract 
 } from 'wagmi';
 import { keccak256, encodePacked } from 'viem';
 import { 
@@ -30,6 +28,7 @@ import {
 } from 'lucide-react';
 
 const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const CONTRACT_ABI = [
   {
@@ -169,7 +168,7 @@ export default function App() {
     setAuthLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/login', {
+      const res = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: authUsername, password: authPassword }),
@@ -183,7 +182,7 @@ export default function App() {
         setAuthError(data.message || 'Invalid username or password');
       }
     } catch (err) {
-      setAuthError('Connection error. Is FastAPI running on port 8000?');
+      setAuthError('Connection error. Is the FastAPI backend running?');
     } finally {
       setAuthLoading(false);
     }
@@ -201,7 +200,7 @@ export default function App() {
     setAuthLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/register', {
+      const res = await fetch(`${API_BASE_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: authUsername, password: authPassword }),
@@ -216,7 +215,7 @@ export default function App() {
         setAuthError(data.message || 'Registration failed');
       }
     } catch (err) {
-      setAuthError('Connection error. Is FastAPI running on port 8000?');
+      setAuthError('Connection error. Is the FastAPI backend running?');
     } finally {
       setAuthLoading(false);
     }
@@ -241,7 +240,7 @@ export default function App() {
     setAgentResult(null);
     
     try {
-      const res = await fetch('http://localhost:8000/api/agent/run', {
+      const res = await fetch(`${API_BASE_URL}/api/agent/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: promptText }),
@@ -255,7 +254,7 @@ export default function App() {
         setAgentError('Failed to obtain audit report.');
       }
     } catch (err) {
-      setAgentError('Connection error. Is FastAPI running on port 8000?');
+      setAgentError('Connection error. Is the FastAPI backend running?');
     } finally {
       setAgentRunning(false);
     }
@@ -284,10 +283,10 @@ export default function App() {
   // Fetch data from Python FastAPI backend
   const fetchBackendData = async () => {
     try {
-      const pollsRes = await fetch('http://localhost:8000/api/polls');
+      const pollsRes = await fetch(`${API_BASE_URL}/api/polls`);
       const pollsData = await pollsRes.json();
       
-      const logsRes = await fetch('http://localhost:8000/api/audit-log');
+      const logsRes = await fetch(`${API_BASE_URL}/api/audit-log`);
       const logsData = await logsRes.json();
 
       setAuditLogs(logsData.logs || []);
@@ -318,7 +317,7 @@ export default function App() {
         ];
 
         for (const p of defaultPolls) {
-          await fetch('http://localhost:8000/api/polls', {
+          await fetch(`${API_BASE_URL}/api/polls`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(p)
@@ -383,7 +382,7 @@ export default function App() {
 
     // Sync to Python API Backend Database
     try {
-      await fetch('http://localhost:8000/api/polls', {
+      await fetch(`${API_BASE_URL}/api/polls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(pollPayload)
@@ -442,7 +441,7 @@ export default function App() {
 
     // Log the vote action to our backend SQLite database
     try {
-      await fetch('http://localhost:8000/api/votes', {
+      await fetch(`${API_BASE_URL}/api/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pollId, voter, actionType: "commit" })
@@ -491,7 +490,7 @@ export default function App() {
 
     // Log the reveal action to our backend SQLite database
     try {
-      await fetch('http://localhost:8000/api/votes', {
+      await fetch(`${API_BASE_URL}/api/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pollId, voter, actionType: "reveal" })
@@ -533,7 +532,7 @@ export default function App() {
 
     // Log the finalization event
     try {
-      await fetch('http://localhost:8000/api/votes', {
+      await fetch(`${API_BASE_URL}/api/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pollId, voter: isConnected && address ? address : "System", actionType: "finalize" })

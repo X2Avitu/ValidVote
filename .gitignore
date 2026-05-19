@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Hardhat
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Python & FastAPI
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Databases & Runtime Locks
+*.db-journal
+*.db-shm
+*.db-wal
+.jac/
+
+# Environment and Credentials
+.env
+.env.production
+.env.development
+.env.local
+.env.*.local
+
+# OS Files
+.DS_Store
+Thumbs.db

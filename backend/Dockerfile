@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir fastapi uvicorn pydantic
 # Copy codebase
 COPY . .
 
+# Add api folder to python path so database module imports correctly
+ENV PYTHONPATH=/app/api
+
 # Expose port
 EXPOSE 8000
 
